@@ -2,27 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Weather Alerts</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    .alert { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-left: 5px solid red; }
-    .header { font-size: 1.2em; font-weight: bold; }
-  </style>
+  <title>Severe Weather Alerts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>Severe Weather Alerts</h1>
-  {% if alerts %}
-    {% for alert in alerts %}
-    <div class="alert">
-      <div class="header">{{ alert.event }} — {{ alert.location }}</div>
-      <div><strong>Effective:</strong> {{ alert.effective }}</div>
-      <div><strong>Expires:</strong> {{ alert.expires }}</div>
-      <div><strong>Headline:</strong> {{ alert.headline }}</div>
-      <p>{{ alert.description[:300] }}...</p>
-    </div>
-    {% endfor %}
-  {% else %}
-    <p>No active alerts found for any location.</p>
-  {% endif %}
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center text-red-600">⚠️ Severe Weather Alerts</h1>
+
+    {% if alerts %}
+      <div class="space-y-4">
+        {% for alert in alerts %}
+        <div class="bg-white border-l-4 border-red-500 shadow p-4 rounded-lg">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-red-700">{{ alert.event }}</h2>
+            <span class="text-sm text-gray-500">{{ alert.location }}</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1"><strong>Effective:</strong> {{ alert.effective }}<br>
+             <strong>Expires:</strong> {{ alert.expires }}</p>
+          <p class="mt-2 text-gray-700"><strong>Headline:</strong> {{ alert.headline }}</p>
+          <p class="mt-2 text-sm text-gray-800">{{ alert.description[:400] }}{% if alert.description|length > 400 %}...{% endif %}</p>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-white p-4 rounded shadow text-center">
+        <p class="text-xl text-green-600 font-semibold">✅ No active alerts found for any location.</p>
+      </div>
+    {% endif %}
+  </div>
+
 </body>
 </html>
