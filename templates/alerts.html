@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Weather Alerts</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .alert { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-left: 5px solid red; }
+    .header { font-size: 1.2em; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Severe Weather Alerts</h1>
+  {% if alerts %}
+    {% for alert in alerts %}
+    <div class="alert">
+      <div class="header">{{ alert.event }} — {{ alert.location }}</div>
+      <div><strong>Effective:</strong> {{ alert.effective }}</div>
+      <div><strong>Expires:</strong> {{ alert.expires }}</div>
+      <div><strong>Headline:</strong> {{ alert.headline }}</div>
+      <p>{{ alert.description[:300] }}...</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>No active alerts found for any location.</p>
+  {% endif %}
+</body>
+</html>
