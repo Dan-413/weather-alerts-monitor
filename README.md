@@ -1,4 +1,4 @@
-# Weather Alerts Monitor (Scalable Version)
+# Weather Alerts Monitor
 
 A modular Flask application that monitors National Weather Service alerts and notifies users via a web interface and email.
 
@@ -9,19 +9,10 @@ A modular Flask application that monitors National Weather Service alerts and no
 - Email notifications for active alerts
 - Easily configurable for more locations or email options
 
-## Setup
+## To-Do
 
-1. Clone this repository.
-2. Create and activate a virtual environment.
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Edit `mailer.py` with your SMTP credentials.
-5. Run the app:
-   ```bash
-   python app.py
-   ```
+1. Edit `mailer.py` with your SMTP credentials.
+5. Add more locations and search criteria for weather alerts
 
 ## Future Enhancements
 - Add filters for alert types (e.g., Tornado, Flood)
