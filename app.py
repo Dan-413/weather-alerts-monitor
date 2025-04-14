@@ -1,16 +1,27 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from alerts.manager import check_alerts
+from db.alert_tracker import init_db  # ✅ Import the DB initializer
 from scheduler import setup_scheduler
-from alerts import check_alerts
 
 app = Flask(__name__)
 
+# ✅ Initialize DB table at startup
+init_db()
+setup_scheduler(app)  # Initialize scheduler with your Flask app
+
 @app.route("/")
 def index():
-    alerts = check_alerts()
-    return render_template("alerts.html", alerts=alerts)
+    severities = request.args.getlist("severity")
+    areas = request.args.getlist("area")
 
-# Initialize the background scheduler
-setup_scheduler()
+    alerts = check_alerts(severities=severities, areas=areas)
+    return render_template(
+        "alerts.html",
+        alerts=alerts,
+        selected_severities=severities,
+        selected_areas=areas
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
