@@ -2,35 +2,108 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Severe Weather Alerts</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Weather Alerts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <button id="toggle-dark" style="float: right; font-size: 1.2rem; background: none; border: none; color: inherit; cursor: pointer;">
+    🌙
+  </button>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body>
+  <h1>Severe Weather Alerts</h1>
 
-  <div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-red-600">⚠️ Severe Weather Alerts</h1>
+  <form method="get" style="margin-bottom: 20px;">
+    <label for="area">Areas:</label>
+    <select name="area" id="area" multiple size="5">
+      {% for state in ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+      "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+      "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+      "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+      "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+      ] %}
+        <option value="{{ state }}" {% if state in selected_areas %}selected{% endif %}>{{ state }}</option>
+      {% endfor %}
+    </select>
+  
+    <label for="severity">Severity:</label>
+    <select name="severity" id="severity" multiple size="5">
+      {% for level in ["Extreme", "Severe", "Moderate", "Minor"] %}
+        <option value="{{ level }}" {% if level in selected_severities %}selected{% endif %}>{{ level }}</option>
+      {% endfor %}
+    </select>
+  
+    <button type="submit">Filter</button>
+  </form>
+  
 
-    {% if alerts %}
-      <div class="space-y-4">
-        {% for alert in alerts %}
-        <div class="bg-white border-l-4 border-red-500 shadow p-4 rounded-lg">
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-red-700">{{ alert.event }}</h2>
-            <span class="text-sm text-gray-500">{{ alert.location }}</span>
-          </div>
-          <p class="text-sm text-gray-600 mt-1"><strong>Effective:</strong> {{ alert.effective }}<br>
-             <strong>Expires:</strong> {{ alert.expires }}</p>
-          <p class="mt-2 text-gray-700"><strong>Headline:</strong> {{ alert.headline }}</p>
-          <p class="mt-2 text-sm text-gray-800">{{ alert.description[:400] }}{% if alert.description|length > 400 %}...{% endif %}</p>
-        </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="bg-white p-4 rounded shadow text-center">
-        <p class="text-xl text-green-600 font-semibold">✅ No active alerts found for any location.</p>
-      </div>
-    {% endif %}
-  </div>
+  {% if alerts %}
+    {% for alert in alerts %}
+    <div class="alert">
+      <div class="header">{{ alert.event }} — {{ alert.location }}</div>
+      <div><strong>Effective:</strong> {{ alert.effective }}</div>
+      <div><strong>Expires:</strong> {{ alert.expires }}</div>
+      <div><strong>Headline:</strong> {{ alert.headline }}</div>
+      <p>{{ alert.description[:300] }}...</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>No active alerts found for the selected criteria.</p>
+  {% endif %}
+
+  <!-- Google Map -->
+  <h2 style="margin-top: 30px; font-size: 1.5em;">Alert Map</h2>
+  <div id="map"></div>
+
+  <script>
+    function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 4,
+        center: { lat: 39.8283, lng: -98.5795 },
+      });
+
+      const alerts = {{ alerts | tojson | safe }};
+
+      alerts.forEach(alert => {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: alert.location }, function(results, status) {
+          if (status === "OK" && results[0]) {
+            const marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location,
+              title: alert.event
+            });
+
+            const infowindow = new google.maps.InfoWindow({
+              content: `<strong>${alert.event}</strong><br>${alert.headline}`
+            });
+
+            marker.addListener("click", () => infowindow.open(map, marker));
+          }
+        });
+      });
+    }
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&callback=initMap">
+  </script>
+
+  <script>
+    const toggleBtn = document.getElementById("toggle-dark");
+    const isDark = localStorage.getItem("theme") === "dark";
+  
+    if (isDark) {
+      document.body.classList.add("dark");
+      toggleBtn.textContent = "☀️";
+    }
+  
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const darkMode = document.body.classList.contains("dark");
+      localStorage.setItem("theme", darkMode ? "dark" : "light");
+      toggleBtn.textContent = darkMode ? "☀️" : "🌙";
+    });
+  </script>
 
 </body>
 </html>
+
