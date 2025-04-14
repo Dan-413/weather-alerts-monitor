@@ -7,12 +7,6 @@
   <button id="toggle-dark" style="float: right; font-size: 1.2rem; background: none; border: none; color: inherit; cursor: pointer;">
     🌙
   </button>
-  <style>
-    body.dark .container {
-      background-color: #121212;
-      color: #e4e4e4;
-    }
-  </style>
 </head>
 <body>
   <h1>Severe Weather Alerts</h1>
@@ -63,7 +57,7 @@
     function initMap() {
       const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 4,
-        center: { lat: 39.8283, lng: -98.5795 }, // Center of USA
+        center: { lat: 39.8283, lng: -98.5795 },
       });
 
       const alerts = {{ alerts | tojson | safe }};
@@ -90,8 +84,9 @@
   </script>
 
   <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV4--HsIWt3h4bllvzmBiKLJYU5uIHFU8&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&callback=initMap">
   </script>
+
   <script>
     const toggleBtn = document.getElementById("toggle-dark");
     const isDark = localStorage.getItem("theme") === "dark";
@@ -108,6 +103,6 @@
       toggleBtn.textContent = darkMode ? "☀️" : "🌙";
     });
   </script>
-  
 </body>
 </html>
+
